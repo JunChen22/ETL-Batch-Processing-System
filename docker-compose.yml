@@ -9,10 +9,9 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: etldb
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - etl-data:/var/lib/postgresql/data
-      - ./document/database/data.sql:/docker-entrypoint-initdb.d/data.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
@@ -31,6 +30,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.3.1
+    container_name: kafka
     restart: always
     ports:
       - "9092:9092"
@@ -39,11 +39,18 @@ services:
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_BROKER_ID=1
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    healthcheck:
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       - zookeeper
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.1
+    container_name: zookeeper
     restart: always
     ports:
       - "2181:2181"

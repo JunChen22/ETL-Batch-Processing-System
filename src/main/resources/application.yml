@@ -6,7 +6,7 @@ spring:
   application:
     name: etl
   datasource:
-    url: jdbc:postgresql://localhost:5433/contentdb
+    url: jdbc:postgresql://localhost:5432/etldb
     username: postgres
     password: password
     driverClassName: org.postgresql.Driver
@@ -72,12 +72,9 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:postgresql://cms-db:5433/contentdb
+    url: jdbc:postgresql://etl-db:5432/etldb
   cloud:
     stream:
       kafka:
         binder:
-          brokers: cms-kafka:9092
-
-server:
-  port: 80
+          brokers: etl-kafka:9092
